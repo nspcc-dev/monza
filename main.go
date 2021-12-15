@@ -151,10 +151,6 @@ func cacheBlocks(ctx context.Context, p *params) error {
 	jobCh := make(chan uint32)
 	errCh := make(chan error)
 	wgCh := make(chan struct{})
-	defer func() {
-		close(jobCh)
-		close(errCh)
-	}()
 
 	wg := new(sync.WaitGroup)
 
@@ -193,9 +189,8 @@ func cacheBlocks(ctx context.Context, p *params) error {
 			return errors.New("interrupted")
 		case err := <-errCh:
 			return err
-		default:
+		case jobCh <- i:
 			wg.Add(1)
-			jobCh <- i
 		}
 	}
 

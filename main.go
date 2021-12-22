@@ -134,6 +134,8 @@ func run(ctx context.Context, p *params) error {
 				PrintNewEpoch(b, ev)
 			case "AddPeer":
 				PrintAddPeer(b, ev)
+			case "UpdateState":
+				PrintUpdateState(b, ev)
 			default:
 				PrintEvent(b, ev, "")
 			}

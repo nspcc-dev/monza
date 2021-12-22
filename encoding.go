@@ -139,3 +139,48 @@ func PrintAddPeer(b *result.Block, n state.NotificationEvent) {
 
 	fmt.Println(s)
 }
+
+func PrintUpdateState(b *result.Block, n state.NotificationEvent) {
+	items, ok := n.Item.Value().([]stackitem.Item)
+	if !ok {
+		PrintEvent(b, n, nonCompatibleMsg)
+		return
+	}
+
+	if len(items) != 2 {
+		PrintEvent(b, n, nonCompatibleMsg)
+		return
+	}
+
+	st, err := items[0].TryInteger()
+	if err != nil {
+		PrintEvent(b, n, nonCompatibleMsg)
+		return
+	}
+
+	var stateStr string
+	switch v := st.Uint64(); v {
+	case 1:
+		stateStr = "online"
+	case 2:
+		stateStr = "offline"
+	default:
+		stateStr = fmt.Sprintf("%d(unknown)", v)
+	}
+
+	pubkey, err := items[1].TryBytes()
+	if err != nil {
+		PrintEvent(b, n, nonCompatibleMsg)
+		return
+	}
+
+	d := time.Unix(int64(b.Timestamp/1e3), 0)
+
+	s := fmt.Sprintf("block:%d at:%s name:%s pubkey:[..%s] state:%s",
+		b.Index, d.Format(time.RFC3339), n.Name,
+		hex.EncodeToString(pubkey[len(pubkey)-3:]),
+		stateStr,
+	)
+
+	fmt.Println(s)
+}

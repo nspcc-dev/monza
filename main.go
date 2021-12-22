@@ -161,6 +161,7 @@ func cacheBlocks(ctx context.Context, p *params) error {
 				case <-ctx.Done():
 					return
 				case block, ok := <-ch:
+					wg.Add(1)
 					if !ok {
 						return
 					}
@@ -190,7 +191,6 @@ func cacheBlocks(ctx context.Context, p *params) error {
 		case err := <-errCh:
 			return err
 		case jobCh <- i:
-			wg.Add(1)
 		}
 	}
 

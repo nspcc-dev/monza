@@ -3,12 +3,17 @@ package main
 import (
 	"encoding/hex"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/nspcc-dev/neo-go/pkg/core/state"
 	"github.com/nspcc-dev/neo-go/pkg/rpc/response/result"
 	"github.com/nspcc-dev/neo-go/pkg/vm/stackitem"
+	netmap "github.com/nspcc-dev/neofs-api-go/v2/netmap/grpc"
+	"google.golang.org/protobuf/proto"
 )
+
+const nonCompatibleMsg = "not NeoFS compatible"
 
 func PrintEvent(b *result.Block, n state.NotificationEvent, extra string) {
 	d := time.Unix(int64(b.Timestamp/1e3), 0)
@@ -73,8 +78,6 @@ func PrintTransfer(b *result.Block, n state.NotificationEvent) {
 }
 
 func PrintNewEpoch(b *result.Block, n state.NotificationEvent) {
-	const nonCompatibleMsg = "not NeoFS compatible"
-
 	items, ok := n.Item.Value().([]stackitem.Item)
 	if !ok {
 		PrintEvent(b, n, nonCompatibleMsg)
@@ -96,6 +99,42 @@ func PrintNewEpoch(b *result.Block, n state.NotificationEvent) {
 
 	s := fmt.Sprintf("block:%d at:%s name:%s epoch:%d",
 		b.Index, d.Format(time.RFC3339), n.Name, epoch,
+	)
+
+	fmt.Println(s)
+}
+
+func PrintAddPeer(b *result.Block, n state.NotificationEvent) {
+	items, ok := n.Item.Value().([]stackitem.Item)
+	if !ok {
+		PrintEvent(b, n, nonCompatibleMsg)
+		return
+	}
+
+	if len(items) != 1 {
+		PrintEvent(b, n, nonCompatibleMsg)
+		return
+	}
+
+	data, err := items[0].TryBytes()
+	if err != nil {
+		PrintEvent(b, n, nonCompatibleMsg)
+		return
+	}
+
+	info := new(netmap.NodeInfo)
+	err = proto.Unmarshal(data, info)
+	if err != nil {
+		PrintEvent(b, n, nonCompatibleMsg)
+		return
+	}
+
+	d := time.Unix(int64(b.Timestamp/1e3), 0)
+
+	s := fmt.Sprintf("block:%d at:%s name:%s pubkey:[..%s] endpoints:[%s]",
+		b.Index, d.Format(time.RFC3339), n.Name,
+		hex.EncodeToString(info.PublicKey[len(info.PublicKey)-3:]),
+		strings.Join(info.Addresses, ", "),
 	)
 
 	fmt.Println(s)

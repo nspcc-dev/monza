@@ -24,9 +24,18 @@ func PrintEvent(b *result.Block, n state.NotificationEvent, extra string) {
 }
 
 func PrintTransfer(b *result.Block, n state.NotificationEvent) {
-	d := time.Unix(int64(b.Timestamp/1e3), 0)
+	const nonCompatibleMsg = "not NEP-17 compatible"
 
-	items := n.Item.Value().([]stackitem.Item)
+	items, ok := n.Item.Value().([]stackitem.Item)
+	if !ok {
+		PrintEvent(b, n, nonCompatibleMsg)
+		return
+	}
+
+	if len(items) != 3 {
+		PrintEvent(b, n, nonCompatibleMsg)
+		return
+	}
 
 	snd, err := items[0].TryBytes()
 	if err != nil {
@@ -40,7 +49,8 @@ func PrintTransfer(b *result.Block, n state.NotificationEvent) {
 
 	bigAmount, err := items[2].TryInteger()
 	if err != nil {
-		PrintEvent(b, n, "non NEP-17 compatible")
+		PrintEvent(b, n, nonCompatibleMsg)
+		return
 	}
 
 	var sndStr, rcvStr = "nil", "nil"
@@ -51,6 +61,8 @@ func PrintTransfer(b *result.Block, n state.NotificationEvent) {
 	if rcv != nil {
 		rcvStr = hex.EncodeToString(rcv)
 	}
+
+	d := time.Unix(int64(b.Timestamp/1e3), 0)
 
 	s := fmt.Sprintf("block:%d at:%s name:%s from:%s to:%s amount:%d",
 		b.Index, d.Format(time.RFC3339), n.Name,

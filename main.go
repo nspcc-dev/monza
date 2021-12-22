@@ -9,6 +9,7 @@ import (
 	"os/signal"
 	"path"
 	"sync"
+	"time"
 
 	"github.com/nspcc-dev/neo-go/pkg/util"
 	"github.com/schollz/progressbar/v3"
@@ -145,7 +146,27 @@ func cacheBlocks(ctx context.Context, p *params) error {
 
 	var bar *progressbar.ProgressBar
 	if !p.disableBar {
-		bar = progressbar.Default(int64(p.to-p.from), "fetching blocks")
+		bar = progressbar.NewOptions(int(p.to-p.from),
+			progressbar.OptionSetDescription("syncing"),
+			progressbar.OptionSetWriter(os.Stderr),
+			progressbar.OptionSetWidth(10),
+			progressbar.OptionThrottle(65*time.Millisecond),
+			progressbar.OptionShowCount(),
+			progressbar.OptionShowIts(),
+			progressbar.OptionSetItsString("blocks"),
+			progressbar.OptionOnCompletion(func() {
+				fmt.Fprint(os.Stderr, "\n")
+			}),
+			progressbar.OptionSpinnerType(14),
+			progressbar.OptionSetWidth(50),
+			progressbar.OptionSetTheme(progressbar.Theme{
+				Saucer:        "#",
+				SaucerHead:    "#",
+				SaucerPadding: " ",
+				BarStart:      "[",
+				BarEnd:        "]",
+			}),
+		)
 	}
 
 	jobCh := make(chan uint32)

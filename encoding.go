@@ -71,3 +71,32 @@ func PrintTransfer(b *result.Block, n state.NotificationEvent) {
 
 	fmt.Println(s)
 }
+
+func PrintNewEpoch(b *result.Block, n state.NotificationEvent) {
+	const nonCompatibleMsg = "not NeoFS compatible"
+
+	items, ok := n.Item.Value().([]stackitem.Item)
+	if !ok {
+		PrintEvent(b, n, nonCompatibleMsg)
+		return
+	}
+
+	if len(items) != 1 {
+		PrintEvent(b, n, nonCompatibleMsg)
+		return
+	}
+
+	epoch, err := items[0].TryInteger()
+	if err != nil {
+		PrintEvent(b, n, nonCompatibleMsg)
+		return
+	}
+
+	d := time.Unix(int64(b.Timestamp/1e3), 0)
+
+	s := fmt.Sprintf("block:%d at:%s name:%s epoch:%d",
+		b.Index, d.Format(time.RFC3339), n.Name, epoch,
+	)
+
+	fmt.Println(s)
+}

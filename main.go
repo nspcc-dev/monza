@@ -130,6 +130,8 @@ func run(ctx context.Context, p *params) error {
 			switch ev.Name {
 			case "Transfer":
 				PrintTransfer(b, ev)
+			case "NewEpoch":
+				PrintNewEpoch(b, ev)
 			default:
 				PrintEvent(b, ev, "")
 			}

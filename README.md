@@ -8,7 +8,7 @@ Application for searching notifications in N3 compatible chains.
 - Monza fetches and caches chain blocks in the filesystem, so application will
   not download it again at restart
 - Monza manages different caches for different chains based on the magic number
-- For NEP notifications monza produces pretty printed output
+- For NEP and NeoFS notifications monza produces detailed output
 - Use relative numbers for search interval
 - Use nice names for native contracts
 - Search multiple notifications at once
@@ -17,7 +17,7 @@ Application for searching notifications in N3 compatible chains.
 
 ```
 $ monza run -r https://rpc01.morph.testnet.fs.neo.org:51331 --from 466858 --to p1 -n NewEpoch:* -n Transfer:gas
-fetching blocks 100% |███████████████████████████████████████████████████████████████████████████████████████████| (1/1, 582 it/s)
+syncing 100% [##################################################] (1/1, 1 blocks/s)
 block:466858 at:2021-11-28T19:57:08+03:00 name:Transfer from:375dce88b11cc120e4b80a94549690ec67145e0f to:nil amount:2526059790
 block:466858 at:2021-11-28T19:57:08+03:00 name:Transfer from:0d967edfde7096d35d607177285286ba66f12fa9 to:nil amount:2525915790
 block:466858 at:2021-11-28T19:57:08+03:00 name:Transfer from:176b57a5107c9c96d49fe34b9378bf5bc4571249 to:nil amount:2525987790
@@ -27,7 +27,22 @@ block:466858 at:2021-11-28T19:57:08+03:00 name:Transfer from:2492cbb531f39a422c0
 block:466858 at:2021-11-28T19:57:08+03:00 name:Transfer from:4d91cf6cea3827f5d5694e668ab36b6e9c0b9aad to:nil amount:2526023790
 block:466858 at:2021-11-28T19:57:08+03:00 name:Transfer from:nil to:2492cbb531f39a422c00b8b00313f74a85e828d0 amount:8291640
 block:466858 at:2021-11-28T19:57:08+03:00 name:Transfer from:nil to:2492cbb531f39a422c00b8b00313f74a85e828d0 amount:50000000
-block:466858 at:2021-11-28T19:57:08+03:00 name:NewEpoch
+block:466858 at:2021-11-28T19:57:08+03:00 name:NewEpoch epoch:1937
+```
+
+### Detailed output
+
+- NEP-17 `Transfer`
+```
+block:956 at:2021-09-08T20:17:31+03:00 name:Transfer from:d08c4c71c779f1e3edb04dc6e434ad5bdac3f10f to:0df7f74adea1bd25011dfefb08949a27c250b640 amount:1218331468
+```
+- NeoFS `NewEpoch`
+```
+block:615896 at:2021-12-24T18:17:38+03:00 name:NewEpoch epoch:2558
+```
+- NeoFS `AddPeer`
+```
+block:615657 at:2021-12-24T17:17:50+03:00 name:AddPeer pubkey:[..8c0f7f] endpoints:[/dns4/st01.testnet.fs.neo.org/tcp/8080]
 ```
 
 ### Notifications

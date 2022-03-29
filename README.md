@@ -114,6 +114,26 @@ monza run -r [endpoint] -w 10 --from 110000 --to 110100 -n NewEpoch:*
 
 To disable progress bar use `--disable-progress-bar` flag.
 
+### Stutter
+
+Monza can search blocks that produced with threshold timeout. Use `stutter`
+command.
+
+```
+$ monza stutter -r https://rpc02.morph.testnet.fs.neo.org:51331 --from 1159200 --to p30 --threshold 20s
+syncing 100% [##################################################] (30/30, 10 blocks/s)       
+block:1159201 at:2022-03-29T18:20:42+03:00
+block:1159202 at:2022-03-29T18:22:12+03:00 [<- stutter for 1m30s]
+-- skipped 5 blocks --
+block:1159208 at:2022-03-29T18:23:43+03:00
+block:1159209 at:2022-03-29T18:25:13+03:00 [<- stutter for 1m30s]
+-- skipped 5 blocks --
+block:1159215 at:2022-03-29T18:26:43+03:00
+block:1159216 at:2022-03-29T18:28:13+03:00 [<- stutter for 1m30s]
+-- skipped 5 blocks --
+block:1159222 at:2022-03-29T18:29:43+03:00
+block:1159223 at:2022-03-29T18:31:13+03:00 [<- stutter for 1m30s]
+```
 
 ## Build
 

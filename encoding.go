@@ -184,3 +184,14 @@ func PrintUpdateState(b *result.Block, n state.NotificationEvent) {
 
 	fmt.Println(s)
 }
+
+func PrintBlock(b *result.Block, extra string) {
+	d := time.Unix(int64(b.Timestamp/1e3), 0)
+	s := fmt.Sprintf("block:%d at:%s", b.Index, d.Format(time.RFC3339))
+
+	if len(extra) != 0 {
+		s += fmt.Sprintf(" [%s]", extra)
+	}
+
+	fmt.Println(s)
+}

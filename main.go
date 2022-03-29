@@ -38,6 +38,21 @@ func main() {
 					disableProgressBarFlag,
 				},
 			},
+			{
+				Name:      "stutter",
+				Usage:     "find stuttered blocks in subset",
+				UsageText: "monza stutter -r [endpoint] --from 101000 --to p1000 --threshold 20s",
+				Action:    stutter,
+				Flags: []cli.Flag{
+					endpointFlag,
+					fromFlag,
+					toFlag,
+					stutterThresholdFlag,
+					cacheFlag,
+					workersFlag,
+					disableProgressBarFlag,
+				},
+			},
 		},
 	}
 

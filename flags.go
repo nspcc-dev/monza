@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/nspcc-dev/neo-go/pkg/core/native/nativenames"
 	"github.com/nspcc-dev/neo-go/pkg/rpc/client"
@@ -19,6 +20,7 @@ const (
 	cacheFlagKey              = "cache"
 	workersFlagKey            = "workers"
 	disableProgressBarFlagKey = "disable-progress-bar"
+	stutterThresholdFlagKey   = "threshold"
 )
 
 var (
@@ -68,6 +70,13 @@ var (
 	disableProgressBarFlag = &cli.BoolFlag{
 		Name:  disableProgressBarFlagKey,
 		Usage: "disable progress bar output",
+	}
+
+	stutterThresholdFlag = &cli.DurationFlag{
+		Name:    stutterThresholdFlagKey,
+		Aliases: []string{"t"},
+		Usage:   "duration limit between block timestamps",
+		Value:   20 * time.Second,
 	}
 )
 

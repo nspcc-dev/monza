@@ -60,11 +60,11 @@ func PrintTransfer(b *result.Block, n state.NotificationEvent) {
 
 	var sndStr, rcvStr = "nil", "nil"
 	if snd != nil {
-		sndStr = hex.EncodeToString(snd)
+		sndStr = hex.EncodeToString(revertBytes(snd))
 	}
 
 	if rcv != nil {
-		rcvStr = hex.EncodeToString(rcv)
+		rcvStr = hex.EncodeToString(revertBytes(rcv))
 	}
 
 	d := time.Unix(int64(b.Timestamp/1e3), 0)
@@ -194,4 +194,12 @@ func PrintBlock(b *result.Block, extra string) {
 	}
 
 	fmt.Println(s)
+}
+
+func revertBytes(data []byte) []byte {
+	ln := len(data)
+	for i := 0; i < ln/2; i++ {
+		data[i], data[ln-1-i] = data[ln-1-i], data[i]
+	}
+	return data
 }

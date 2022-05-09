@@ -53,6 +53,16 @@ func main() {
 					disableProgressBarFlag,
 				},
 			},
+			{
+				Name:      "explore",
+				Usage:     "explore stuttered blocks in subset",
+				UsageText: "monza explore -r [endpoint]",
+				Action:    explorer,
+				Flags: []cli.Flag{
+					endpointFlag,
+					cacheFlag,
+				},
+			},
 		},
 	}
 

@@ -135,6 +135,15 @@ block:1159222 at:2022-03-29T18:29:43+03:00
 block:1159223 at:2022-03-29T18:31:13+03:00 [<- stutter for 1m30s]
 ```
 
+### Explorer
+
+Run monza in interactive mode to navigate through blocks, transactions and
+notifications with `explore` command. 
+
+```
+$ monza explore -r https://rpc02.morph.testnet.fs.neo.org:51331
+```
+
 ## Build
 
 Use `make build` command. Binary will be stored in `./bin/monza`.
@@ -143,7 +152,6 @@ Use `make build` command. Binary will be stored in `./bin/monza`.
 ## To Do
 - [ ] `monza cache` command to manage bbolt instances: provide size and option to delete
 - [ ] Add verbose flag with for detailed view of notification body
-- [ ] Do not print progressbar if stdout is not console
 - [ ] Add more native contract hashes aliases
 - [ ] More NEP support (NEP-11?)
 

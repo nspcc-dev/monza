@@ -64,6 +64,16 @@ func (d *Chain) Block(i uint32) (res *result.Block, err error) {
 	return block, d.addBlock(block)
 }
 
+func (d *Chain) BlockByHash(h util.Uint256) (res *result.Block, err error) {
+	rev := h.Reverse()
+	block, err := d.Client.GetBlockByHashVerbose(rev)
+	if err != nil {
+		return nil, fmt.Errorf("block %s fetch: %w", h.StringLE(), err)
+	}
+
+	return block, d.addBlock(block)
+}
+
 func (d *Chain) block(i uint32) (res *result.Block, err error) {
 	err = d.db.View(func(tx *bbolt.Tx) error {
 		key := make([]byte, 4)

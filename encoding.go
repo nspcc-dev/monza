@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/nspcc-dev/neo-go/pkg/core/state"
-	"github.com/nspcc-dev/neo-go/pkg/rpc/response/result"
+	"github.com/nspcc-dev/neo-go/pkg/neorpc/result"
 	"github.com/nspcc-dev/neo-go/pkg/vm/stackitem"
 	netmap "github.com/nspcc-dev/neofs-api-go/v2/netmap/grpc"
 	"google.golang.org/protobuf/proto"

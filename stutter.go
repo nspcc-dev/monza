@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/alexvanin/monza/chain"
-	"github.com/nspcc-dev/neo-go/pkg/rpc/response/result"
+	"github.com/nspcc-dev/neo-go/pkg/neorpc/result"
 	"github.com/urfave/cli/v2"
 )
 

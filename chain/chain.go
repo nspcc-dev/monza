@@ -9,15 +9,15 @@ import (
 
 	"github.com/nspcc-dev/neo-go/pkg/core/state"
 	"github.com/nspcc-dev/neo-go/pkg/io"
-	"github.com/nspcc-dev/neo-go/pkg/rpc/client"
-	"github.com/nspcc-dev/neo-go/pkg/rpc/response/result"
+	"github.com/nspcc-dev/neo-go/pkg/neorpc/result"
+	"github.com/nspcc-dev/neo-go/pkg/rpcclient"
 	"github.com/nspcc-dev/neo-go/pkg/util"
 	"go.etcd.io/bbolt"
 )
 
 type Chain struct {
 	db     *bbolt.DB
-	Client *client.Client
+	Client *rpcclient.Client
 }
 
 var (
@@ -26,7 +26,7 @@ var (
 )
 
 func Open(ctx context.Context, dir, endpoint string) (*Chain, error) {
-	cli, err := client.New(ctx, endpoint, client.Options{})
+	cli, err := rpcclient.New(ctx, endpoint, rpcclient.Options{})
 	if err != nil {
 		return nil, fmt.Errorf("rpc connection: %w", err)
 	}
@@ -36,7 +36,12 @@ func Open(ctx context.Context, dir, endpoint string) (*Chain, error) {
 		return nil, fmt.Errorf("rpc client initialization: %w", err)
 	}
 
-	dbPath := path.Join(dir, strconv.Itoa(int(cli.GetNetwork()))+".db")
+	n, err := cli.GetNetwork()
+	if err != nil {
+		return nil, fmt.Errorf("rpc network state: %w", err)
+	}
+
+	dbPath := path.Join(dir, strconv.Itoa(int(n))+".db")
 
 	db, err := bbolt.Open(dbPath, 0600, nil)
 	if err != nil {

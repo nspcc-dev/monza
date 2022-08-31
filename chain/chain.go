@@ -38,17 +38,12 @@ func Open(ctx context.Context, dir, endpoint string) (*Chain, error) {
 		return nil, fmt.Errorf("rpc client initialization: %w", err)
 	}
 
-	n, err := cli.GetNetwork()
-	if err != nil {
-		return nil, fmt.Errorf("rpc network state: %w", err)
-	}
-
 	v, err := cli.GetVersion()
 	if err != nil {
 		return nil, fmt.Errorf("rpc get version: %w", err)
 	}
 
-	dbPath := path.Join(dir, strconv.Itoa(int(n))+".db")
+	dbPath := path.Join(dir, strconv.Itoa(int(v.Protocol.Network))+".db")
 
 	db, err := bbolt.Open(dbPath, 0600, nil)
 	if err != nil {

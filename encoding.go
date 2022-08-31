@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/nspcc-dev/neo-go/pkg/core/block"
 	"github.com/nspcc-dev/neo-go/pkg/core/state"
-	"github.com/nspcc-dev/neo-go/pkg/neorpc/result"
 	"github.com/nspcc-dev/neo-go/pkg/vm/stackitem"
 	netmap "github.com/nspcc-dev/neofs-api-go/v2/netmap/grpc"
 	"google.golang.org/protobuf/proto"
@@ -15,7 +15,7 @@ import (
 
 const nonCompatibleMsg = "not NeoFS compatible"
 
-func PrintEvent(b *result.Block, n state.NotificationEvent, extra string) {
+func PrintEvent(b *block.Block, n state.NotificationEvent, extra string) {
 	d := time.Unix(int64(b.Timestamp/1e3), 0)
 	s := fmt.Sprintf("block:%d at:%s name:%s",
 		b.Index, d.Format(time.RFC3339), n.Name,
@@ -28,7 +28,7 @@ func PrintEvent(b *result.Block, n state.NotificationEvent, extra string) {
 	fmt.Println(s)
 }
 
-func PrintTransfer(b *result.Block, n state.NotificationEvent) {
+func PrintTransfer(b *block.Block, n state.NotificationEvent) {
 	const nonCompatibleMsg = "not NEP-17 compatible"
 
 	items, ok := n.Item.Value().([]stackitem.Item)
@@ -77,7 +77,7 @@ func PrintTransfer(b *result.Block, n state.NotificationEvent) {
 	fmt.Println(s)
 }
 
-func PrintNewEpoch(b *result.Block, n state.NotificationEvent) {
+func PrintNewEpoch(b *block.Block, n state.NotificationEvent) {
 	items, ok := n.Item.Value().([]stackitem.Item)
 	if !ok {
 		PrintEvent(b, n, nonCompatibleMsg)
@@ -104,7 +104,7 @@ func PrintNewEpoch(b *result.Block, n state.NotificationEvent) {
 	fmt.Println(s)
 }
 
-func PrintAddPeer(b *result.Block, n state.NotificationEvent) {
+func PrintAddPeer(b *block.Block, n state.NotificationEvent) {
 	items, ok := n.Item.Value().([]stackitem.Item)
 	if !ok {
 		PrintEvent(b, n, nonCompatibleMsg)
@@ -140,7 +140,7 @@ func PrintAddPeer(b *result.Block, n state.NotificationEvent) {
 	fmt.Println(s)
 }
 
-func PrintUpdateState(b *result.Block, n state.NotificationEvent) {
+func PrintUpdateState(b *block.Block, n state.NotificationEvent) {
 	items, ok := n.Item.Value().([]stackitem.Item)
 	if !ok {
 		PrintEvent(b, n, nonCompatibleMsg)
@@ -185,7 +185,7 @@ func PrintUpdateState(b *result.Block, n state.NotificationEvent) {
 	fmt.Println(s)
 }
 
-func PrintBlock(b *result.Block, extra string) {
+func PrintBlock(b *block.Block, extra string) {
 	d := time.Unix(int64(b.Timestamp/1e3), 0)
 	s := fmt.Sprintf("block:%d at:%s", b.Index, d.Format(time.RFC3339))
 

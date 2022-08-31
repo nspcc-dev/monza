@@ -7,6 +7,7 @@ import (
 	"path"
 	"strconv"
 
+	"github.com/nspcc-dev/neo-go/pkg/core/block"
 	"github.com/nspcc-dev/neo-go/pkg/core/state"
 	"github.com/nspcc-dev/neo-go/pkg/io"
 	"github.com/nspcc-dev/neo-go/pkg/neorpc/result"
@@ -16,8 +17,9 @@ import (
 )
 
 type Chain struct {
-	db     *bbolt.DB
-	Client *rpcclient.Client
+	db        *bbolt.DB
+	stateRoot bool
+	Client    *rpcclient.Client
 }
 
 var (
@@ -41,6 +43,11 @@ func Open(ctx context.Context, dir, endpoint string) (*Chain, error) {
 		return nil, fmt.Errorf("rpc network state: %w", err)
 	}
 
+	v, err := cli.GetVersion()
+	if err != nil {
+		return nil, fmt.Errorf("rpc get version: %w", err)
+	}
+
 	dbPath := path.Join(dir, strconv.Itoa(int(n))+".db")
 
 	db, err := bbolt.Open(dbPath, 0600, nil)
@@ -48,10 +55,10 @@ func Open(ctx context.Context, dir, endpoint string) (*Chain, error) {
 		return nil, fmt.Errorf("database [%s] init: %w", dbPath, err)
 	}
 
-	return &Chain{db, cli}, nil
+	return &Chain{db, v.Protocol.StateRootInHeader, cli}, nil
 }
 
-func (d *Chain) Block(i uint32) (res *result.Block, err error) {
+func (d *Chain) Block(i uint32) (res *block.Block, err error) {
 	cached, err := d.block(i)
 	if err != nil {
 		return nil, err
@@ -61,25 +68,25 @@ func (d *Chain) Block(i uint32) (res *result.Block, err error) {
 		return cached, nil
 	}
 
-	block, err := d.Client.GetBlockByIndexVerbose(i)
+	metaBlock, err := d.Client.GetBlockByIndexVerbose(i)
 	if err != nil {
 		return nil, fmt.Errorf("block %d fetch: %w", i, err)
 	}
 
-	return block, d.addBlock(block)
+	return &metaBlock.Block, d.addBlock(&metaBlock.Block)
 }
 
-func (d *Chain) BlockByHash(h util.Uint256) (res *result.Block, err error) {
+func (d *Chain) BlockByHash(h util.Uint256) (res *block.Block, err error) {
 	rev := h.Reverse()
-	block, err := d.Client.GetBlockByHashVerbose(rev)
+	metaBlock, err := d.Client.GetBlockByHashVerbose(rev)
 	if err != nil {
 		return nil, fmt.Errorf("block %s fetch: %w", h.StringLE(), err)
 	}
 
-	return block, d.addBlock(block)
+	return &metaBlock.Block, d.addBlock(&metaBlock.Block)
 }
 
-func (d *Chain) block(i uint32) (res *result.Block, err error) {
+func (d *Chain) block(i uint32) (res *block.Block, err error) {
 	err = d.db.View(func(tx *bbolt.Tx) error {
 		key := make([]byte, 4)
 		binary.LittleEndian.PutUint32(key, i)
@@ -94,7 +101,7 @@ func (d *Chain) block(i uint32) (res *result.Block, err error) {
 			return nil
 		}
 
-		res = new(result.Block)
+		res = block.New(d.stateRoot)
 		r := io.NewBinReaderFromBuf(data)
 		res.DecodeBinary(r)
 
@@ -107,7 +114,7 @@ func (d *Chain) block(i uint32) (res *result.Block, err error) {
 	return res, nil
 }
 
-func (d *Chain) addBlock(block *result.Block) error {
+func (d *Chain) addBlock(block *block.Block) error {
 	err := d.db.Batch(func(tx *bbolt.Tx) error {
 		key := make([]byte, 4)
 		binary.LittleEndian.PutUint32(key, block.Index)
@@ -207,7 +214,7 @@ func (d *Chain) Notifications(txHash util.Uint256) ([]state.NotificationEvent, e
 	return res, nil
 }
 
-func (d *Chain) AllNotifications(b *result.Block) ([]state.NotificationEvent, error) {
+func (d *Chain) AllNotifications(b *block.Block) ([]state.NotificationEvent, error) {
 	res := make([]state.NotificationEvent, 0, 0)
 
 	appLog, err := d.ApplicationLog(b.Hash())

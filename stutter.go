@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/alexvanin/monza/chain"
-	"github.com/nspcc-dev/neo-go/pkg/neorpc/result"
+	"github.com/nspcc-dev/neo-go/pkg/core/block"
 	"github.com/urfave/cli/v2"
 )
 
@@ -61,7 +61,7 @@ func stutter(c *cli.Context) (err error) {
 
 	// process blocks one by one
 	var (
-		prev, curr       *result.Block
+		prev, curr       *block.Block
 		prevTS, currTS   time.Time
 		lastStutterBlock uint32
 	)

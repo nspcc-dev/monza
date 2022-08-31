@@ -14,8 +14,8 @@ import (
 
 	"github.com/alexvanin/monza/chain"
 	"github.com/gdamore/tcell/v2"
+	"github.com/nspcc-dev/neo-go/pkg/core/block"
 	"github.com/nspcc-dev/neo-go/pkg/core/state"
-	"github.com/nspcc-dev/neo-go/pkg/neorpc/result"
 	"github.com/nspcc-dev/neo-go/pkg/util"
 	"github.com/nspcc-dev/neo-go/pkg/vm/stackitem"
 	"github.com/rivo/tview"
@@ -392,7 +392,7 @@ func (e *Explorer) cacheBlocks(from, to uint32) {
 	}
 }
 
-func (e *Explorer) cacheNotifications(block *result.Block) {
+func (e *Explorer) cacheNotifications(block *block.Block) {
 	for _, tx := range block.Transactions {
 		h := tx.Hash()
 		e.wg.Add(1)
@@ -444,7 +444,7 @@ func (e *Explorer) errorStatusBar(input *tview.InputField, message string) {
 		SetLabel(message)
 }
 
-func (e *Explorer) displayBlockFlex(f *tview.Flex, info, counter, notif *tview.TextView, list *tview.List, b *result.Block) {
+func (e *Explorer) displayBlockFlex(f *tview.Flex, info, counter, notif *tview.TextView, list *tview.List, b *block.Block) {
 	ln := min(len(b.Transactions), 7)
 	for _, tx := range b.Transactions {
 		list.AddItem(tx.Hash().StringLE(), "", 0, nil)

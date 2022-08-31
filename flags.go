@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/nspcc-dev/neo-go/pkg/core/native/nativenames"
-	"github.com/nspcc-dev/neo-go/pkg/rpc/client"
+	"github.com/nspcc-dev/neo-go/pkg/rpcclient"
 	"github.com/nspcc-dev/neo-go/pkg/util"
 	"github.com/urfave/cli/v2"
 )
@@ -80,7 +80,7 @@ var (
 	}
 )
 
-func parseNotifications(notifications []string, cli *client.Client) (map[string]*util.Uint160, error) {
+func parseNotifications(notifications []string, cli *rpcclient.Client) (map[string]*util.Uint160, error) {
 	res := make(map[string]*util.Uint160, len(notifications))
 
 	for _, n := range notifications {
@@ -118,7 +118,7 @@ func parseNotifications(notifications []string, cli *client.Client) (map[string]
 	return res, nil
 }
 
-func parseInterval(fromStr, toStr string, cli *client.Client) (from, to uint32, err error) {
+func parseInterval(fromStr, toStr string, cli *rpcclient.Client) (from, to uint32, err error) {
 	switch { // parse from value and return result if it is relative
 	case len(fromStr) == 0:
 		return 0, 0, ErrInvalidInterval(fromStr, toStr)
